@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Bot</title>
+    <style>
+        /* CSS styles for the chat bot */
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        #chatbot-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #337ab7;
+            color: #fff;
+            text-align: center;
+            font-size: 30px;
+            line-height: 60px;
+            cursor: pointer;
+        }
+
+        #chatbot-window {
+            width: 300px;
+            height: 400px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+        }
+
+        #chatbot-header {
+            background-color: #337ab7;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #chatbot-messages {
+            height: 320px;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        #chatbot-input {
+            width: 100%;
+            padding: 5px;
+            border: none;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var chatbotOpen = false;
+
+            // Toggle chat bot visibility
+            function toggleChatBot() {
+                if (chatbotOpen) {
+                    $('#chatbot-window').hide();
+                } else {
+                    $('#chatbot-window').show();
+                }
+                chatbotOpen = !chatbotOpen;
+            }
+
+            // Send user message to the chat bot
+            function sendMessage(message) {
+                // Here, you can implement your logic to process the user message
+                // and send it to your backend for further processing or integration with APIs.
+                // For this example, we'll just display a simple response.
+
+                var response = 'This is a sample response. You said: ' + message;
+
+                // Display the bot's response
+                displayMessage(response, 'bot');
+
+                // Clear the input field
+                $('#chatbot-input').val('');
+            }
+
+
+
+            // Display a message in the chat window
+            function displayMessage(message, sender) {
+                var messageElement = $('<div>').addClass('message').addClass(sender).text(message);
+                $('#chatbot-messages').append(messageElement);
+                // Scroll to the bottom of the chat window
+                $('#chatbot-messages').scrollTop($('#chatbot-messages')[0].scrollHeight);
+            }
+
+            // Event handler for clicking on the chat bot icon
+            $('#chatbot-icon').click(function() {
+                toggleChatBot();
+            });
+
+            // Event handler for submitting a message
+            $('#chatbot-form').submit(function(e) {
+                e.preventDefault();
+                var message = $('#chatbot-input').val();
+                      sendMessage(message);
+                $.ajax({
+                    type: 'POST',
+                    url: 'bible.php',
+                    data: { "question" : message },
+                    success: function(data) {
+                        //$('#response').html(data);
+                        displayMessage(message, 'user');
+                    }
+                });
+
+
+                
+               // displayMessage(message, 'user');
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="chatbot-container">
+        <div id="chatbot-icon">&#x1F4AC;</div>
+        <div id="chatbot-window">
+            <div id="chatbot-header">Chat Bot</div>
+            <div id="chatbot-messages"></div>
+            <form id="chatbot-form">
+                <input type="text" id="chatbot-input" placeholder="Type a message..." autocomplete="off">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
